@@ -8,4 +8,8 @@ defmodule TeamMissionWeb.Router do
   scope "/api", TeamMissionWeb do
     pipe_through :api
   end
+
+  scope "/", TeamMissionWeb do
+    get("/*path", PageController, :index)
+  end
 end
