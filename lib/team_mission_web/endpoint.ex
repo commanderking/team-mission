@@ -11,7 +11,7 @@ defmodule TeamMissionWeb.Endpoint do
   ]
 
   socket "/socket", TeamMissionWeb.UserSocket,
-    websocket: true,
+    websocket: [timeout: 45_000],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
