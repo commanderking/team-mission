@@ -1,7 +1,7 @@
 FROM node:12-alpine AS assets
 WORKDIR /app/assets
 COPY ./assets /app/assets
-RUN yarn install && yarn build
+RUN npm install && npm build
 
 FROM elixir:latest
 ARG MIX_ENV=prod
