@@ -33,7 +33,16 @@ WORKDIR /app
 COPY . /app
 COPY --from=assets /app/assets/build /app/assets/build
 RUN apk --no-cache add curl
-RUN mix local.hex --force && mix local.rebar --force && mix do deps.get, compile
+
+RUN mix local.hex --force && \
+    mix local.rebar --force
+ENV MIX_ENV=prod
+
+COPY mix.exs mix.lock ./
+COPY config config
+RUN mix deps.get
+RUN mix deps.compile
+
 CMD mix phx.server
 
 
