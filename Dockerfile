@@ -22,11 +22,11 @@
 FROM node:12-alpine AS assets
 WORKDIR /app/assets
 COPY ./assets /app/assets
-RUN npm install && npm build
+RUN npm install && npm run build
 
 FROM elixir:1.9.1-alpine
 ARG MIX_ENV=prod
-ARG DATABASE_URL=postgres://postgres:postgres@localhost/healthyskin_dev
+ARG DATABASE_URL=postgres://postgres:postgres@localhost/team_mission_dev
 ARG SECRET_KEY_BASE=secret
 ENV MIX_HOME=/root/.mix
 WORKDIR /app
