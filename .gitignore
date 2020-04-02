@@ -29,3 +29,4 @@ team_mission-*.tar
 
 
 /assets/node_modules
+/assets/build
