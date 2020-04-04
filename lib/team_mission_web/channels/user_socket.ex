@@ -2,7 +2,8 @@ defmodule TeamMissionWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", TeamMissionWeb.RoomChannel
+  channel "room:*", TeamMissionWeb.RoomChannel
+  channel "team:*", TeamMissionWeb.TeamChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

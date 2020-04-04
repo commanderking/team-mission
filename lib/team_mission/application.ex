@@ -11,9 +11,10 @@ defmodule TeamMission.Application do
       # Start the Ecto repository
       TeamMission.Repo,
       # Start the endpoint when the application starts
-      TeamMissionWeb.Endpoint
+      TeamMissionWeb.Endpoint,
       # Starts a worker by calling: TeamMission.Worker.start_link(arg)
       # {TeamMission.Worker, arg},
+      TeamMissionWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
