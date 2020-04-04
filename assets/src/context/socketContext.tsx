@@ -4,7 +4,12 @@ import { createContext } from "react";
 
 import { Socket } from "phoenix";
 
-const socket = new Socket("ws://localhost:4000/socket", {
+const isDevEnvironment = process.env.NODE_ENV === "development";
+
+const getSocketUrl = () =>
+  isDevEnvironment ? "ws://localhost:4000/socket" : "/socket";
+
+const socket = new Socket(getSocketUrl(), {
   params: { token: "abc" }
 });
 export const SocketContext = createContext(socket);
