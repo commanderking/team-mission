@@ -30,3 +30,7 @@ team_mission-*.tar
 
 /assets/node_modules
 /assets/build
+
+.elixir_ls
+
+.DS_Store
