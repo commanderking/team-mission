@@ -5,17 +5,33 @@ import useChannel from "hooks/useChannel";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
 import { Team, CurrentUser, TeamMember } from "features/lobby/LobbyTypes";
+
 const hasJoinedTeam = (currentUser: CurrentUser, teamMembers: TeamMember[]) => {
   const userTeamMember = teamMembers.find(
-    (member) => member.userId === currentUser.id
+    (member) => member.id === currentUser.id && member.teamId !== null
   );
 
   return Boolean(userTeamMember);
 };
 
+const isOnThisTeam = (
+  currentUser: CurrentUser,
+  teamMembers: TeamMember[],
+  teamId: string
+) => {
+  const userTeamMember = teamMembers.find(
+    (member) => member.id === currentUser.id
+  );
+
+  if (!userTeamMember) {
+    return false;
+  }
+
+  return userTeamMember.teamId === teamId;
+};
+
 const mapMembersToTeams = (teamMembers: TeamMember[], teams: Team[]) => {
   const teamMembersByTeamId = _.groupBy(teamMembers, "teamId");
-  console.log("teamMemebrsByTeamId", teamMembersByTeamId);
 
   return teams.map((team) => {
     return {
@@ -32,7 +48,7 @@ const LobbyContainer = () => {
     "Jeff"
   );
 
-  const { teams, currentUser, teamMembers } = channelState;
+  const { teams, currentUser, students } = channelState;
 
   const handleJoinTeam = (
     teamId: string,
@@ -44,13 +60,17 @@ const LobbyContainer = () => {
     }
   };
 
-  console.log("channelState", channelState);
-  // console.log("hasJoinedTeam", hasJoinedTeam(currentUser, teams));
+  const handleLeaveTeam = (
+    teamId: string,
+    userName: string | null,
+    userId: string | null
+  ) => {
+    channel?.push("leave_team", { teamId, userName, userId });
+  };
+
   // const test = useChannel("team:lobby", (state, action) => {}, {}, "Team Jeff");
 
-  const formattedTeams = mapMembersToTeams(teamMembers, teams);
-
-  console.log("formattedTEams", formattedTeams);
+  const formattedTeams = mapMembersToTeams(students, teams);
 
   return (
     <div>
@@ -63,10 +83,10 @@ const LobbyContainer = () => {
           <Card key={id} title={team.name}>
             <ul>
               {members.map((member) => {
-                return <li>{member.userName}</li>;
+                return <li>{member.name}</li>;
               })}
             </ul>
-            {!teamFull && !hasJoinedTeam(currentUser, teamMembers) && (
+            {!teamFull && !hasJoinedTeam(currentUser, students) && (
               <Button
                 onClick={() => {
                   handleJoinTeam(id, currentUser.name, currentUser.id);
@@ -74,6 +94,17 @@ const LobbyContainer = () => {
                 type="primary"
               >
                 Join Team
+              </Button>
+            )}
+            {isOnThisTeam(currentUser, students, id) && (
+              <Button
+                danger
+                type="primary"
+                onClick={() => {
+                  handleLeaveTeam(id, currentUser.name, currentUser.id);
+                }}
+              >
+                Leave Team
               </Button>
             )}
           </Card>

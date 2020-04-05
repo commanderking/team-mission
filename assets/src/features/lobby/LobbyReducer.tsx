@@ -4,7 +4,7 @@ import { lobbyActions } from "./LobbyActions";
 export const initialState: ChannelState = {
   currentUser: { id: null, name: null },
   messages: [],
-  attendees: [],
+  students: [],
   userLobbyActions: [],
   teams: [
     {
@@ -20,14 +20,10 @@ export const initialState: ChannelState = {
       name: "Team Villager",
     },
   ],
-  teamMembers: [],
 };
 
 const lobbyReducer = (state: ChannelState, action: any): ChannelState => {
-  console.log("action", action);
   switch (action.type) {
-    case lobbyActions.NEW_MSG:
-      return { ...state, messages: [...state.messages, action.payload] };
     case lobbyActions.USER_JOIN:
       return {
         ...state,
@@ -36,22 +32,15 @@ const lobbyReducer = (state: ChannelState, action: any): ChannelState => {
     case lobbyActions.AFTER_JOIN:
       return {
         ...state,
-        currentUser: action.payload,
+        currentUser: action.payload.current_user,
       };
     case lobbyActions.USER_LEAVE:
       return {
         ...state,
         userLobbyActions: [...state.userLobbyActions, ...action.payload],
       };
-    case lobbyActions.UPDATE_PRESENCE_STATE:
-      return { ...state, attendees: action.payload };
-    case lobbyActions.SYNC_PRESENCE:
-      return { ...state, attendees: action.payload };
-    case lobbyActions.JOIN_TEAM:
-      return {
-        ...state,
-        teamMembers: [...state.teamMembers, action.payload],
-      };
+    case lobbyActions.SYNC_STUDENT_PRESENCE:
+      return { ...state, students: action.payload };
 
     default:
       throw new Error("Non valid Action");

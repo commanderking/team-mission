@@ -19,8 +19,8 @@ export type UserLobbyAction = {
 
 export type TeamMember = {
   teamId: string;
-  userId: string;
-  userName: string;
+  id: string;
+  name: string;
 };
 
 export type Team = {
@@ -36,8 +36,7 @@ export type CurrentUser = {
 export type ChannelState = {
   currentUser: CurrentUser;
   messages: Message[];
-  attendees: Attendee[];
+  students: TeamMember[];
   userLobbyActions: UserLobbyAction[];
   teams: Team[];
-  teamMembers: TeamMember[];
 };
