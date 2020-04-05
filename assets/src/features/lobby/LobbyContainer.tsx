@@ -6,6 +6,10 @@ import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
 import { Team, CurrentUser, TeamMember } from "features/lobby/LobbyTypes";
 
+type Props = {
+  displayName: string;
+};
+
 const hasJoinedTeam = (currentUser: CurrentUser, teamMembers: TeamMember[]) => {
   const userTeamMember = teamMembers.find(
     (member) => member.id === currentUser.id && member.teamId !== null
@@ -41,11 +45,11 @@ const mapMembersToTeams = (teamMembers: TeamMember[], teams: Team[]) => {
   });
 };
 
-const LobbyContainer = () => {
+const LobbyContainer = ({ displayName }: Props) => {
   const { channelState, channel } = useLobbyChannel(
     lobbyReducer,
     initialState,
-    "Jeff"
+    displayName
   );
 
   const { teams, currentUser, students } = channelState;
@@ -74,7 +78,6 @@ const LobbyContainer = () => {
 
   return (
     <div>
-      <h1>Team Mission</h1>
       <div
         style={{
           display: "grid",
