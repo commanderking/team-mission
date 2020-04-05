@@ -15,22 +15,28 @@ defmodule TeamMissionWeb.RoomChannel do
      assign(socket, :user_data, %{name: name, id: id})}
   end
 
-  def join("room:" <> _private_room_id, _params, _socket) do
-    {:error, %{reason: "unauthorized"}}
+  def join("room:" <> _private_room_id, message, socket) do
+    name = message["params"]["name"]
+
+    assign(socket, :user_data, %{name: name})
+
+    {:ok, socket}
   end
 
-  def handle_in("new_join", _params, socket) do
-    id = socket.assigns[:user_data][:id]
-    name = socket.assigns[:user_data][:name]
-    # broadcast!(socket, "new_join", %{user_data: %{name: name, uuid: uuid}})
+  def handle_in("new_msg", payload, socket) do
+    "room:" <> room = socket.topic
+    payload = Map.merge(payload, %{"room" => room})
+    broadcast!(socket, "new_msg", payload)
     {:noreply, socket}
   end
 
-  def handle_in("new_msg", %{"text" => text}, socket) do
-    name = socket.assigns[:user_data][:name]
-    broadcast!(socket, "new_msg", %{text: text, name: name})
-    {:noreply, socket}
-  end
+  # Useful if want to stream the users joining - otherwise can use presence to sync
+  # def handle_in("new_join", _params, socket) do
+  #   id = socket.assigns[:user_data][:id]
+  #   name = socket.assigns[:user_data][:name]
+  #   broadcast!(socket, "new_join", %{user_data: %{name: name, uuid: uuid}})
+  #   {:noreply, socket}
+  # end
 
   def handle_in("join_team", params, socket) do
     assign(socket, :user_data, %{teamId: params["teamId"]})
@@ -48,12 +54,8 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_in("leave_team", _params, socket) do
-    # assign(socket, :user_data, %{teamId: nil})
-
     name = socket.assigns[:user_data][:name]
     id = socket.assigns[:user_data][:id]
-
-    # teamId = socket.assigns[:user_data][:teamId]
 
     Presence.update(socket, "students", %{
       name: name,
@@ -61,12 +63,11 @@ defmodule TeamMissionWeb.RoomChannel do
       teamId: nil
     })
 
-    # broadcast!(socket, "leave_team", %{
-    #   teamId: teamId,
-    #   userName: name,
-    #   userId: id
-    # })
+    {:noreply, socket}
+  end
 
+  def handle_in("start_activity", _params, socket) do
+    broadcast!(socket, "start_activity", %{})
     {:noreply, socket}
   end
 
@@ -86,8 +87,6 @@ defmodule TeamMissionWeb.RoomChannel do
         id: id,
         teamId: nil
       })
-
-    # broadcast!(socket, "after_join", %{id: uuid, name: name, presence: Presence.list(socket)})
 
     {:noreply, socket}
   end

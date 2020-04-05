@@ -18,21 +18,19 @@ const useChannel = <T>(
   const [state, dispatch]: [T, any] = useReducer(reducer, initialState);
 
   // @ts-ignore
-  const [lobbyChannel, setLobbyChannel]: [Channel | null, any] = useState(null);
+  const [channel, setChannel]: [Channel | null, any] = useState(null);
 
   useEffect(() => {
     socket.connect();
 
     const channel: Channel = socket.channel(channelTopic, {
-      params: { name }
+      params: { name },
     });
 
     channel
       .join()
-      .receive("ok", resp => {
-        channel.push("new_join", { body: { name } });
-        // @ts-ignore
-        setLobbyChannel(channel);
+      .receive("ok", (resp) => {
+        setChannel(channel);
       })
       .receive("error", ({ reason }) => {
         console.error("failed to join channel", reason);
@@ -43,7 +41,7 @@ const useChannel = <T>(
     };
   }, [channelTopic, socket]);
 
-  return { channelState: state, channel: lobbyChannel, dispatch };
+  return { channelState: state, channel, dispatch };
 };
 
 export default useChannel;
