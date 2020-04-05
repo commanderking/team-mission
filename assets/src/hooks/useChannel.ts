@@ -12,7 +12,7 @@ const useChannel = <T>(
   channelTopic: string,
   reducer: (state: any, action: any) => any,
   initialState: T,
-  name: string
+  params: Object
 ): { channelState: T; channel: Channel | null; dispatch: any } => {
   const socket = useContext(SocketContext);
   const [state, dispatch]: [T, any] = useReducer(reducer, initialState);
@@ -24,7 +24,7 @@ const useChannel = <T>(
     socket.connect();
 
     const channel: Channel = socket.channel(channelTopic, {
-      params: { name },
+      params,
     });
 
     channel

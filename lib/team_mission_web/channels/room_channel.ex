@@ -17,10 +17,11 @@ defmodule TeamMissionWeb.RoomChannel do
 
   def join("room:" <> _private_room_id, message, socket) do
     name = message["params"]["name"]
+    id = message["params"]["id"]
 
-    assign(socket, :user_data, %{name: name})
+    send(self(), :after_activity_join)
 
-    {:ok, socket}
+    {:ok, assign(socket, :user_data, %{name: name, id: id})}
   end
 
   def handle_in("new_msg", payload, socket) do
@@ -71,6 +72,16 @@ defmodule TeamMissionWeb.RoomChannel do
     {:noreply, socket}
   end
 
+  def handle_in("vote", params, socket) do
+    Presence.update(socket, "team", %{
+      vote: params["id"]
+    })
+
+    {:noreply, socket}
+  end
+
+  @spec handle_info(:after_activity_join | :after_join, Phoenix.Socket.t()) ::
+          {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     name = socket.assigns[:user_data][:name]
     id = socket.assigns[:user_data][:id]
@@ -87,6 +98,23 @@ defmodule TeamMissionWeb.RoomChannel do
         id: id,
         teamId: nil
       })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:after_activity_join, socket) do
+    name = socket.assigns[:user_data][:name]
+    socket.assigns |> inspect() |> Logger.debug()
+    Logger.info(name)
+
+    {:ok, _} =
+      Presence.track(socket, "team", %{
+        name: name,
+        task: [],
+        vote: ""
+      })
+
+    push(socket, "presence_state", Presence.list(socket))
 
     {:noreply, socket}
   end

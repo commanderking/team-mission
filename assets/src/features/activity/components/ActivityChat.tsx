@@ -24,7 +24,7 @@ const Messages = ({
                 key={`chat-message-${index}`}
                 author={<a>{displayName}</a>}
                 avatar={<Avatar>{displayName}</Avatar>}
-                content={<p>{message}</p>}
+                content={<p>{message.text}</p>}
               />
             );
           })}

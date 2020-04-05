@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Card, Button, Row, Col } from "antd";
 import _ from "lodash";
-import useChannel from "hooks/useChannel";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
 import { Team, CurrentUser, TeamMember } from "features/lobby/LobbyTypes";
@@ -101,6 +100,7 @@ const LobbyContainer = ({ displayName }: Props) => {
       {activityInProgress && currentUserTeam && (
         <ActivityContainer
           teamId={findCurrentUserTeam(currentUser, students)}
+          userId={currentUser.id}
           displayName={displayName}
         />
       )}

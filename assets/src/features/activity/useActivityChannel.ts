@@ -6,14 +6,14 @@ import { Presence } from "phoenix";
 const useActivityChannel = <T>(
   reducer: (state: any, action: any) => any,
   initialState: T,
-  name: string,
+  params: Object,
   teamId: string
 ) => {
   const { channelState, channel, dispatch } = useChannel(
     `room:${teamId}`,
     reducer,
     initialState,
-    name
+    params
   );
 
   useEffect(() => {
