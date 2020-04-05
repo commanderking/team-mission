@@ -11,12 +11,6 @@ export type Attendee = {
   uuid: string;
 };
 
-export type UserLobbyAction = {
-  name: string;
-  uuid: string;
-  actionType: typeof lobbyActions.USER_JOIN | typeof lobbyActions.USER_LEAVE;
-};
-
 export type TeamMember = {
   teamId: string;
   id: string;
@@ -36,8 +30,8 @@ export type CurrentUser = {
 
 export type ChannelState = {
   currentUser: CurrentUser;
+  activityInProgress: boolean;
   messages: Message[];
   students: TeamMember[];
-  userLobbyActions: UserLobbyAction[];
   teams: Team[];
 };

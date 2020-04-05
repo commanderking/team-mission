@@ -19,14 +19,6 @@ const useLobbyChannel = <T>(
     if (channel) {
       const presence = new Presence(channel);
 
-      channel.on("new_join", (payload) => {
-        const { user_data } = payload;
-        dispatch({
-          type: "USER_JOIN",
-          payload: { ...user_data, actionType: "USER_JOIN" },
-        });
-      });
-
       channel.on("after_join", (payload) => {
         dispatch({
           type: "AFTER_JOIN",
@@ -40,6 +32,13 @@ const useLobbyChannel = <T>(
         dispatch({
           type: lobbyActions.JOIN_TEAM,
           payload,
+        });
+      });
+
+      channel.on("start_activity", () => {
+        dispatch({
+          type: lobbyActions.CHANGE_ACTIVITY_STATUS,
+          payload: true,
         });
       });
 

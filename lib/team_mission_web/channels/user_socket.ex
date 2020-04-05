@@ -3,7 +3,7 @@ defmodule TeamMissionWeb.UserSocket do
 
   ## Channels
   channel "room:*", TeamMissionWeb.RoomChannel
-  channel "team:*", TeamMissionWeb.TeamChannel
+  channel "team:*", TeamMissionWeb.ActivityChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

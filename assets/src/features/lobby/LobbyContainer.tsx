@@ -5,6 +5,8 @@ import useChannel from "hooks/useChannel";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
 import { Team, CurrentUser, TeamMember } from "features/lobby/LobbyTypes";
+import { Channel } from "phoenix";
+import ActivityContainer from "features/activity/ActivityContainer";
 
 type Props = {
   displayName: string;
@@ -34,6 +36,18 @@ const isOnThisTeam = (
   return userTeamMember.teamId === teamId;
 };
 
+const findCurrentUserTeam = (
+  currentUser: CurrentUser,
+  teamMembers: TeamMember[]
+) => {
+  const user = teamMembers.find((member) => member.id === currentUser.id);
+  if (!user) {
+    return null;
+  }
+
+  return user.teamId;
+};
+
 const mapMembersToTeams = (teamMembers: TeamMember[], teams: Team[]) => {
   const teamMembersByTeamId = _.groupBy(teamMembers, "teamId");
 
@@ -45,6 +59,10 @@ const mapMembersToTeams = (teamMembers: TeamMember[], teams: Team[]) => {
   });
 };
 
+const handleStartActivity = (channel: Channel | null) => {
+  channel?.push("start_activity", {});
+};
+
 const LobbyContainer = ({ displayName }: Props) => {
   const { channelState, channel } = useLobbyChannel(
     lobbyReducer,
@@ -52,7 +70,7 @@ const LobbyContainer = ({ displayName }: Props) => {
     displayName
   );
 
-  const { teams, currentUser, students } = channelState;
+  const { teams, currentUser, students, activityInProgress } = channelState;
 
   const handleJoinTeam = (
     teamId: string,
@@ -76,8 +94,16 @@ const LobbyContainer = ({ displayName }: Props) => {
 
   const formattedTeams = mapMembersToTeams(students, teams);
 
+  const currentUserTeam = findCurrentUserTeam(currentUser, students);
+
   return (
     <div>
+      {activityInProgress && currentUserTeam && (
+        <ActivityContainer
+          teamId={findCurrentUserTeam(currentUser, students)}
+          displayName={displayName}
+        />
+      )}
       <div
         style={{
           display: "grid",
@@ -125,6 +151,14 @@ const LobbyContainer = ({ displayName }: Props) => {
           );
         })}
       </div>
+      <Button
+        type="primary"
+        onClick={() => {
+          handleStartActivity(channel);
+        }}
+      >
+        Start Activity
+      </Button>
     </div>
   );
 };
