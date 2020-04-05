@@ -26,6 +26,7 @@ export type TeamMember = {
 export type Team = {
   id: string;
   name: string;
+  image: string;
 };
 
 export type CurrentUser = {

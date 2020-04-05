@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Card, Button } from "antd";
+import { Card, Button, Row, Col } from "antd";
 import _ from "lodash";
 import useChannel from "hooks/useChannel";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
@@ -75,41 +75,53 @@ const LobbyContainer = () => {
   return (
     <div>
       <h1>Team Mission</h1>
-      {formattedTeams.map((team) => {
-        const { id, members } = team;
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr 1fr",
+          gridColumnGap: "10px",
+          gridRowGap: "15px",
+        }}
+      >
+        {formattedTeams.map((team) => {
+          const { id, members, image } = team;
 
-        const teamFull = members.length >= 4;
-        return (
-          <Card key={id} title={team.name}>
-            <ul>
-              {members.map((member) => {
-                return <li>{member.name}</li>;
-              })}
-            </ul>
-            {!teamFull && !hasJoinedTeam(currentUser, students) && (
-              <Button
-                onClick={() => {
-                  handleJoinTeam(id, currentUser.name, currentUser.id);
-                }}
-                type="primary"
-              >
-                Join Team
-              </Button>
-            )}
-            {isOnThisTeam(currentUser, students, id) && (
-              <Button
-                danger
-                type="primary"
-                onClick={() => {
-                  handleLeaveTeam(id, currentUser.name, currentUser.id);
-                }}
-              >
-                Leave Team
-              </Button>
-            )}
-          </Card>
-        );
-      })}
+          const teamFull = members.length >= 4;
+          return (
+            <Card key={id} title={team.name}>
+              {image && (
+                <img src={image} style={{ width: "150px", height: "200px" }} />
+              )}
+              <ul>
+                {members.map((member) => {
+                  return <li>{member.name}</li>;
+                })}
+              </ul>
+              {!teamFull && !hasJoinedTeam(currentUser, students) && (
+                <Button
+                  onClick={() => {
+                    handleJoinTeam(id, currentUser.name, currentUser.id);
+                  }}
+                  type="primary"
+                >
+                  Join Team
+                </Button>
+              )}
+              {isOnThisTeam(currentUser, students, id) && (
+                <Button
+                  danger
+                  type="primary"
+                  onClick={() => {
+                    handleLeaveTeam(id, currentUser.name, currentUser.id);
+                  }}
+                >
+                  Leave Team
+                </Button>
+              )}
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 };
