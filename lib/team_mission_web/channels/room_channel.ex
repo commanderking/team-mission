@@ -33,7 +33,6 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_in("join_team", params, socket) do
-    Logger.info("in join team")
     assign(socket, :user_data, %{teamId: params["teamId"]})
 
     name = socket.assigns[:user_data][:name]
@@ -44,15 +43,6 @@ defmodule TeamMissionWeb.RoomChannel do
       id: id,
       teamId: params["teamId"]
     })
-
-    Logger.info("end join team")
-
-    # broadcast!(socket, "join_team", %{
-    #   teamId: params["teamId"],
-    #   userName: params["userName"],
-    #   userId: params["userId"],
-    #   presenceList: Presence.list(socket)
-    # })
 
     {:noreply, socket}
   end
