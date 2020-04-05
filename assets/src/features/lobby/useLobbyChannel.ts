@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import useChannel from "hooks/useChannel";
+import { lobbyActions } from "features/lobby/LobbyActions";
+import { Presence } from "phoenix";
 
 const useLobbyChannel = <T>(
   reducer: (state: any, action: any) => any,
@@ -15,12 +17,40 @@ const useLobbyChannel = <T>(
 
   useEffect(() => {
     if (channel) {
-      channel.on("new_join", payload => {
-        console.log("new join payload", payload);
+      const presence = new Presence(channel);
+
+      channel.on("new_join", (payload) => {
         const { user_data } = payload;
         dispatch({
           type: "USER_JOIN",
-          payload: { ...user_data, actionType: "USER_JOIN" }
+          payload: { ...user_data, actionType: "USER_JOIN" },
+        });
+      });
+
+      channel.on("after_join", (payload) => {
+        dispatch({
+          type: "AFTER_JOIN",
+          payload: {
+            current_user: payload.current_user,
+          },
+        });
+      });
+
+      channel.on("join_team", (payload) => {
+        dispatch({
+          type: lobbyActions.JOIN_TEAM,
+          payload,
+        });
+      });
+
+      presence.onSync(() => {
+        presence.list((presenceId, { metas }) => {
+          if (presenceId === "students") {
+            dispatch({
+              type: lobbyActions.SYNC_STUDENT_PRESENCE,
+              payload: metas,
+            });
+          }
         });
       });
     }
