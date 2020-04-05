@@ -19,9 +19,7 @@ const useActivityChannel = <T>(
   useEffect(() => {
     if (channel) {
       const presence = new Presence(channel);
-
       channel.on("new_msg", (response) => {
-        console.log("response", response);
         dispatch({
           type: activityActions.NEW_MESSAGE,
           payload: response,

@@ -12,7 +12,6 @@ type Props = {
 };
 
 const ActivityContainer = ({ displayName, teamId }: Props) => {
-  console.log("teamId", teamId);
   const { channelState, channel } = useActivityChannel(
     activityReducer,
     initialState,

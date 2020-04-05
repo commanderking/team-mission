@@ -33,7 +33,6 @@ const Messages = ({
           form={form}
           name="basic"
           onFinish={(formValues) => {
-            console.log("formValues", formValues);
             channel.push("new_msg", {
               text: formValues.text,
               name: displayName,
