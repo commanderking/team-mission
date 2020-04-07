@@ -21,7 +21,6 @@ const activityReducer = (state: ActivityState, action: any): ActivityState => {
       };
 
     case activityActions.SYNC_ACTIVITY_PRESENCE:
-      console.log("syncing presence", action.payload);
       return {
         ...state,
         members: action.payload,

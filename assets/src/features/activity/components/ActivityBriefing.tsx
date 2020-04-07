@@ -75,9 +75,6 @@ const ActivityBriefing = ({ channel, channelState, userId }: Props) => {
 
   const currentUserAnswerId = getUserVoteAnswerId(userId, members);
 
-  console.log("members", members);
-
-  console.log("answersWithVotes", answersWithVotes);
   return (
     <List
       dataSource={answersWithVotes}

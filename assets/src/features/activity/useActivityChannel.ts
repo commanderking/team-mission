@@ -27,8 +27,6 @@ const useActivityChannel = <T>(
       });
       presence.onSync(() => {
         presence.list((presenceId, { metas }) => {
-          console.log("presenceId", presenceId);
-          console.log("metas", metas);
           if (presenceId === "team") {
             dispatch({
               type: activityActions.SYNC_ACTIVITY_PRESENCE,

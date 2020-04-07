@@ -85,8 +85,6 @@ defmodule TeamMissionWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  @spec handle_info(:after_activity_join | :after_join, Phoenix.Socket.t()) ::
-          {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     name = socket.assigns[:user_data][:name]
     id = socket.assigns[:user_data][:id]
@@ -110,7 +108,6 @@ defmodule TeamMissionWeb.RoomChannel do
   def handle_info(:after_activity_join, socket) do
     name = socket.assigns[:user_data][:name]
     socket.assigns |> inspect() |> Logger.debug()
-    Logger.info(name)
 
     {:ok, _} =
       Presence.track(socket, "team", %{
