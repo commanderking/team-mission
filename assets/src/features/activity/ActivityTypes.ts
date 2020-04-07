@@ -3,11 +3,19 @@ type Message = {
   text: string;
 };
 
-type Answer = {
+type Vote = {
+  answerId: string;
+  userId: string;
+};
+
+export type Member = {
   id: string;
+  name: string;
+  votedAnswerId: string;
 };
 
 export type ActivityState = {
   messages: Message[];
-  answers: Answer[];
+  votes: Vote[];
+  members: Member[];
 };

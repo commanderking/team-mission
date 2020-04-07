@@ -6,14 +6,14 @@ import { Presence } from "phoenix";
 const useActivityChannel = <T>(
   reducer: (state: any, action: any) => any,
   initialState: T,
-  name: string,
+  params: Object,
   teamId: string
 ) => {
   const { channelState, channel, dispatch } = useChannel(
     `room:${teamId}`,
     reducer,
     initialState,
-    name
+    params
   );
 
   useEffect(() => {
@@ -23,6 +23,16 @@ const useActivityChannel = <T>(
         dispatch({
           type: activityActions.NEW_MESSAGE,
           payload: response,
+        });
+      });
+      presence.onSync(() => {
+        presence.list((presenceId, { metas }) => {
+          if (presenceId === "team") {
+            dispatch({
+              type: activityActions.SYNC_ACTIVITY_PRESENCE,
+              payload: metas,
+            });
+          }
         });
       });
     }

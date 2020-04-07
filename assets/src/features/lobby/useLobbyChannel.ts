@@ -12,7 +12,7 @@ const useLobbyChannel = <T>(
     "room:lobby",
     reducer,
     initialState,
-    name
+    { name }
   );
 
   useEffect(() => {
