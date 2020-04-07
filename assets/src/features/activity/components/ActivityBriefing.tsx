@@ -1,29 +1,30 @@
 import React from "react";
 import parse from "html-react-parser";
-import { List, Button } from "antd";
+import { Card, Button, Table, Tag } from "antd";
 import { Channel } from "phoenix";
 import { ActivityState, Member } from "features/activity/ActivityTypes";
+import { CheckCircleTwoTone } from "@ant-design/icons";
 
 const sampleActivityData = {
-  title: "Unknown Compound Toxicity",
+  title: "Extracting Lead",
   description:
-    "Analysis of the local water has revealed five major compounds present in the water.",
+    "From which of the following compounds, could we extract the most lead atoms?",
   answers: [
     {
       id: "answer1",
-      text: "Pb(NO<sub>3</sub>)<sub>2</sub>",
+      text: "26g Pb(NO<sub>3</sub>)<sub>2</sub>",
     },
     {
       id: "answer2",
-      text: "PbCl<sub>2</sub>",
+      text: "5.0g PbCl<sub>2</sub>",
     },
     {
       id: "answer3",
-      text: "PbSO<sub>4</sub>",
+      text: "32g PbSO<sub>4</sub>",
     },
     {
       id: "answer4",
-      text: "Pb(C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>)<sub>2</sub>",
+      text: "7.25g Pb(C<sub>2</sub>H<sub>3</sub>O<sub>2</sub>)<sub>2</sub>",
     },
   ],
 };
@@ -65,6 +66,55 @@ const getUserVoteAnswerId = (userId: string | null, members: Member[]) => {
   return currentUser?.votedAnswerId;
 };
 
+const getColumns = (
+  channel: Channel | null,
+  currentUserAnswerId: string | undefined
+) => [
+  {
+    title: "Choices",
+    dataIndex: "text",
+    key: "text",
+    render: (text: string) => parse(text),
+  },
+  {
+    title: "Votes",
+    dataIndex: "votes",
+    key: "votes",
+    render: (text: string, record: any) => {
+      return (
+        <div>
+          {record.votes.map((vote: string) => {
+            return (
+              <CheckCircleTwoTone
+                twoToneColor="#52c41a"
+                style={{ fontSize: "30px" }}
+              />
+            );
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    title: "",
+    dataIndex: "id",
+    key: "id",
+    width: 65,
+    render: (text: string, record: any) => {
+      return (
+        <Button
+          disabled={currentUserAnswerId === record.id}
+          onClick={() => {
+            handleVote(channel, record.id);
+          }}
+        >
+          Vote
+        </Button>
+      );
+    },
+  },
+];
+
 const ActivityBriefing = ({ channel, channelState, userId }: Props) => {
   const { members } = channelState;
 
@@ -74,33 +124,25 @@ const ActivityBriefing = ({ channel, channelState, userId }: Props) => {
   );
 
   const currentUserAnswerId = getUserVoteAnswerId(userId, members);
-
   return (
-    <List
-      dataSource={answersWithVotes}
-      renderItem={(item, index) => {
-        return (
-          <List.Item key={item.id}>
-            <List.Item.Meta
-              title={`Task ${index + 1}`}
-              description={parse(item.text)}
-            />
-            {item.votes.map((vote) => {
-              return <div>{vote}</div>;
-            })}
-            {currentUserAnswerId !== item.id && (
-              <Button
-                onClick={() => {
-                  handleVote(channel, item.id);
-                }}
-              >
-                Vote
-              </Button>
-            )}
-          </List.Item>
-        );
-      }}
-    ></List>
+    <Card title={sampleActivityData.title}>
+      <h3 style={{ textAlign: "left" }}>{sampleActivityData.description}</h3>
+      <Table
+        dataSource={answersWithVotes}
+        columns={getColumns(channel, currentUserAnswerId)}
+        pagination={false}
+      />
+      <Card>
+        <h3>Team Members</h3>
+        {members.map((member) => (
+          <Tag
+            style={{ padding: "10px", fontSize: "20px", borderRadius: "30px" }}
+          >
+            {member.name}
+          </Tag>
+        ))}
+      </Card>
+    </Card>
   );
 };
 

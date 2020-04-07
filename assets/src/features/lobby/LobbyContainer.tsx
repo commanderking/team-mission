@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Card, Button, Row, Col } from "antd";
+import { Card, Button, Tag } from "antd";
 import _ from "lodash";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
@@ -121,11 +121,21 @@ const LobbyContainer = ({ displayName }: Props) => {
               {image && (
                 <img src={image} style={{ width: "150px", height: "200px" }} />
               )}
-              <ul>
+              <div style={{ padding: "10px" }}>
                 {members.map((member) => {
-                  return <li>{member.name}</li>;
+                  return (
+                    <Tag
+                      style={{
+                        padding: "10px",
+                        fontSize: "20px",
+                        borderRadius: "30px",
+                      }}
+                    >
+                      {member.name}
+                    </Tag>
+                  );
                 })}
-              </ul>
+              </div>
               {!teamFull && !hasJoinedTeam(currentUser, students) && (
                 <Button
                   onClick={() => {
