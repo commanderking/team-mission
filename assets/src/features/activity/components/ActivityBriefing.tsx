@@ -2,7 +2,7 @@ import React from "react";
 import parse from "html-react-parser";
 import { List, Button } from "antd";
 import { Channel } from "phoenix";
-import { ActivityState } from "features/activity/ActivityTypes";
+import { ActivityState, Member } from "features/activity/ActivityTypes";
 
 const sampleActivityData = {
   title: "Unknown Compound Toxicity",
@@ -31,16 +31,56 @@ const sampleActivityData = {
 type Props = {
   channel: Channel | null;
   channelState: ActivityState;
+  userId: string | null;
 };
 
 const handleVote = (channel: Channel | null, itemId: string) => {
   channel?.push("vote", { id: itemId });
 };
 
-const ActivityBriefing = ({ channel, channelState }: Props) => {
+const appendVotesToAnswers = (
+  answers: { id: string; text: string }[],
+  members: Member[]
+) => {
+  return answers.map((answer) => {
+    const membersVotingForAnswer = members.map((member) => {
+      if (member.votedAnswerId === answer.id) {
+        return member.name;
+      }
+      return null;
+    });
+
+    return {
+      ...answer,
+      votes: membersVotingForAnswer.filter(Boolean),
+    };
+  });
+};
+
+const getUserVoteAnswerId = (userId: string | null, members: Member[]) => {
+  const currentUser = members.find((member) => {
+    return member.id === userId;
+  });
+
+  return currentUser?.votedAnswerId;
+};
+
+const ActivityBriefing = ({ channel, channelState, userId }: Props) => {
+  const { members } = channelState;
+
+  const answersWithVotes = appendVotesToAnswers(
+    sampleActivityData.answers,
+    members
+  );
+
+  const currentUserAnswerId = getUserVoteAnswerId(userId, members);
+
+  console.log("members", members);
+
+  console.log("answersWithVotes", answersWithVotes);
   return (
     <List
-      dataSource={sampleActivityData.answers}
+      dataSource={answersWithVotes}
       renderItem={(item, index) => {
         return (
           <List.Item key={item.id}>
@@ -48,13 +88,18 @@ const ActivityBriefing = ({ channel, channelState }: Props) => {
               title={`Task ${index + 1}`}
               description={parse(item.text)}
             />
-            <Button
-              onClick={() => {
-                handleVote(channel, item.id);
-              }}
-            >
-              Vote
-            </Button>
+            {item.votes.map((vote) => {
+              return <div>{vote}</div>;
+            })}
+            {currentUserAnswerId !== item.id && (
+              <Button
+                onClick={() => {
+                  handleVote(channel, item.id);
+                }}
+              >
+                Vote
+              </Button>
+            )}
           </List.Item>
         );
       }}

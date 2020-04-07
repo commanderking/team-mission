@@ -23,12 +23,25 @@ const ActivityContainer = ({ displayName, teamId, userId }: Props) => {
   return (
     <div>
       <h1>In mission</h1>
-      <ActivityBriefing channelState={channelState} channel={channel} />
-      <ActivityChat
-        channelState={channelState}
-        channel={channel}
-        displayName={displayName}
-      />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gridColumnGap: "10px",
+          gridRowGap: "15px",
+        }}
+      >
+        <ActivityBriefing
+          channelState={channelState}
+          channel={channel}
+          userId={userId}
+        />
+        <ActivityChat
+          channelState={channelState}
+          channel={channel}
+          displayName={displayName}
+        />
+      </div>
     </div>
   );
 };

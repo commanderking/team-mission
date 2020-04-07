@@ -73,8 +73,13 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_in("vote", params, socket) do
+    name = socket.assigns[:user_data][:name]
+    id = socket.assigns[:user_data][:id]
+
     Presence.update(socket, "team", %{
-      vote: params["id"]
+      name: name,
+      id: id,
+      votedAnswerId: params["id"]
     })
 
     {:noreply, socket}
@@ -90,14 +95,14 @@ defmodule TeamMissionWeb.RoomChannel do
       current_user: %{id: id, name: name}
     })
 
-    push(socket, "presence_state", Presence.list(socket))
-
     {:ok, _} =
       Presence.track(socket, "students", %{
         name: name,
         id: id,
         teamId: nil
       })
+
+    push(socket, "presence_state", Presence.list(socket))
 
     {:noreply, socket}
   end
@@ -111,7 +116,7 @@ defmodule TeamMissionWeb.RoomChannel do
       Presence.track(socket, "team", %{
         name: name,
         task: [],
-        vote: ""
+        vote: nil
       })
 
     push(socket, "presence_state", Presence.list(socket))
