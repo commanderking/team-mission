@@ -1,4 +1,4 @@
-type Message = {
+export type Message = {
   name: string;
   text: string;
 };

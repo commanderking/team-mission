@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ActivityState } from "features/activity/ActivityTypes";
 import { Form, Input, Button, Card, Comment, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-
+import { Message } from "features/activity/ActivityTypes";
 const Messages = ({
   channelState,
   channel,
@@ -21,11 +21,11 @@ const Messages = ({
         <Card
           style={{ height: "550px", marginBottom: "25px", overflowY: "scroll" }}
         >
-          {messages.map((message: any, index: any) => {
+          {messages.map((message: Message, index: number) => {
             return (
               <Comment
                 key={`chat-message-${index}`}
-                author={<a>{displayName}</a>}
+                author={<a>{message.name}</a>}
                 avatar={<Avatar icon={<UserOutlined />} />}
                 content={<p>{message.text}</p>}
               />
