@@ -34,3 +34,4 @@ team_mission-*.tar
 .elixir_ls
 
 .DS_Store
+node_modules

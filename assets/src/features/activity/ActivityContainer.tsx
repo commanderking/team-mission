@@ -21,27 +21,26 @@ const ActivityContainer = ({ displayName, teamId, userId }: Props) => {
   );
 
   return (
-    <div>
-      <h1>In mission</h1>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
-          gridColumnGap: "10px",
-          gridRowGap: "15px",
-        }}
-      >
-        <ActivityBriefing
-          channelState={channelState}
-          channel={channel}
-          userId={userId}
-        />
-        <ActivityChat
-          channelState={channelState}
-          channel={channel}
-          displayName={displayName}
-        />
-      </div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "4fr 4fr",
+        gridTemplateRows: "800px",
+        gridColumnGap: "10px",
+        gridRowGap: "15px",
+        padding: "50px",
+      }}
+    >
+      <ActivityBriefing
+        channelState={channelState}
+        channel={channel}
+        userId={userId}
+      />
+      <ActivityChat
+        channelState={channelState}
+        channel={channel}
+        displayName={displayName}
+      />
     </div>
   );
 };

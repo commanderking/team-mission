@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ActivityState } from "features/activity/ActivityTypes";
 import { Form, Input, Button, Card, Comment, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 
 const Messages = ({
   channelState,
@@ -16,19 +17,21 @@ const Messages = ({
 
   return (
     <div>
-      <Card title="Team Chat" style={{ width: "500px", margin: "auto" }}>
-        <div>
+      <Card title="Team Chat">
+        <Card
+          style={{ height: "550px", marginBottom: "25px", overflowY: "scroll" }}
+        >
           {messages.map((message: any, index: any) => {
             return (
               <Comment
                 key={`chat-message-${index}`}
                 author={<a>{displayName}</a>}
-                avatar={<Avatar>{displayName}</Avatar>}
+                avatar={<Avatar icon={<UserOutlined />} />}
                 content={<p>{message.text}</p>}
               />
             );
           })}
-        </div>
+        </Card>
         <Form
           form={form}
           name="basic"
@@ -42,7 +45,7 @@ const Messages = ({
           }}
         >
           <Form.Item
-            label="Text"
+            label="Message"
             name="text"
             rules={[{ required: true, message: "Please input some text." }]}
           >

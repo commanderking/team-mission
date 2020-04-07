@@ -4,6 +4,7 @@ import Ecto
 defmodule TeamMissionWeb.RoomChannel do
   use Phoenix.Channel
   alias TeamMissionWeb.Presence
+  alias TeamMissionWeb.Message
 
   def join("room:lobby", message, socket) do
     name = message["params"]["name"]
@@ -27,6 +28,7 @@ defmodule TeamMissionWeb.RoomChannel do
   def handle_in("new_msg", payload, socket) do
     "room:" <> room = socket.topic
     payload = Map.merge(payload, %{"room" => room})
+
     broadcast!(socket, "new_msg", payload)
     {:noreply, socket}
   end
@@ -42,8 +44,8 @@ defmodule TeamMissionWeb.RoomChannel do
   def handle_in("join_team", params, socket) do
     assign(socket, :user_data, %{teamId: params["teamId"]})
 
-    name = socket.assigns[:user_data][:name]
-    id = socket.assigns[:user_data][:id]
+    name = socket.assigns.user_data.name
+    id = socket.assigns.user_data.id
 
     Presence.update(socket, "students", %{
       name: name,
@@ -72,22 +74,22 @@ defmodule TeamMissionWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("vote", params, socket) do
+  def handle_in("vote", %{"id" => voteId}, socket) do
     name = socket.assigns[:user_data][:name]
     id = socket.assigns[:user_data][:id]
 
     Presence.update(socket, "team", %{
       name: name,
       id: id,
-      votedAnswerId: params["id"]
+      votedAnswerId: voteId
     })
 
     {:noreply, socket}
   end
 
   def handle_info(:after_join, socket) do
-    name = socket.assigns[:user_data][:name]
-    id = socket.assigns[:user_data][:id]
+    name = socket.assigns.user_data.name
+    id = socket.assigns.user_data.id
 
     push(socket, "after_join", %{
       current_user: %{id: id, name: name}
@@ -106,7 +108,7 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_info(:after_activity_join, socket) do
-    name = socket.assigns[:user_data][:name]
+    name = socket.assigns.user_data.name
     socket.assigns |> inspect() |> Logger.debug()
 
     {:ok, _} =
