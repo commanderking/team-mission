@@ -33,7 +33,7 @@ const activityReducer = (state: ActivityState, action: any): ActivityState => {
       };
 
     default:
-      throw new Error("Non valid Action");
+      return state;
   }
 };
 

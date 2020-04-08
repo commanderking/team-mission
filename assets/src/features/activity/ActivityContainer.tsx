@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Channel } from "phoenix";
 import useActivityChannel from "features/activity/useActivityChannel";
 import ActivityChat from "features/activity/components/ActivityChat";
@@ -19,6 +19,10 @@ const ActivityContainer = ({ displayName, teamId, userId }: Props) => {
     { name: displayName, id: userId },
     teamId || ""
   );
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div

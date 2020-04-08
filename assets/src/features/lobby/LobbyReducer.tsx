@@ -68,7 +68,7 @@ const lobbyReducer = (state: ChannelState, action: any): ChannelState => {
       };
 
     default:
-      throw new Error("Non valid Action");
+      return state;
   }
 };
 

@@ -19,15 +19,6 @@ const useLobbyChannel = <T>(
     if (channel) {
       const presence = new Presence(channel);
 
-      channel.on("after_join", (payload) => {
-        dispatch({
-          type: "AFTER_JOIN",
-          payload: {
-            current_user: payload.current_user,
-          },
-        });
-      });
-
       channel.on("join_team", (payload) => {
         dispatch({
           type: lobbyActions.JOIN_TEAM,

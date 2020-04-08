@@ -36,6 +36,13 @@ const useChannel = <T>(
         console.error("failed to join channel", reason);
       });
 
+    channel.on("after_join", (payload) => {
+      dispatch({
+        type: "AFTER_JOIN",
+        payload,
+      });
+    });
+
     return () => {
       channel.leave();
     };
