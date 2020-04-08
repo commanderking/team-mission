@@ -89,11 +89,11 @@ const LobbyContainer = ({ displayName }: Props) => {
     channel?.push("leave_team", { teamId, userName, userId });
   };
 
-  // const test = useChannel("team:lobby", (state, action) => {}, {}, "Team Jeff");
-
   const formattedTeams = mapMembersToTeams(students, teams);
 
   const currentUserTeam = findCurrentUserTeam(currentUser, students);
+
+  const isAdmin = window.location.href.includes("admin");
 
   return (
     <div>
@@ -161,14 +161,16 @@ const LobbyContainer = ({ displayName }: Props) => {
           );
         })}
       </div>
-      <Button
-        type="primary"
-        onClick={() => {
-          handleStartActivity(channel);
-        }}
-      >
-        Start Activity
-      </Button>
+      {isAdmin && (
+        <Button
+          type="primary"
+          onClick={() => {
+            handleStartActivity(channel);
+          }}
+        >
+          Start Activity
+        </Button>
+      )}
     </div>
   );
 };
