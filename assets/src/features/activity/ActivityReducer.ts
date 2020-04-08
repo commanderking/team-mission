@@ -26,6 +26,12 @@ const activityReducer = (state: ActivityState, action: any): ActivityState => {
         members: action.payload,
       };
 
+    case activityActions.GET_ROOM_MESSAGES:
+      return {
+        ...state,
+        messages: action.payload.messages,
+      };
+
     default:
       throw new Error("Non valid Action");
   }

@@ -25,6 +25,14 @@ const useActivityChannel = <T>(
           payload: response,
         });
       });
+
+      channel.on("get_room_messages", (payload) => {
+        console.log("get_room_messages payload", payload);
+        dispatch({
+          type: activityActions.GET_ROOM_MESSAGES,
+          payload,
+        });
+      });
       presence.onSync(() => {
         presence.list((presenceId, { metas }) => {
           if (presenceId === "team") {

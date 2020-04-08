@@ -4,7 +4,7 @@ import Ecto
 defmodule TeamMissionWeb.RoomChannel do
   use Phoenix.Channel
   alias TeamMissionWeb.Presence
-  alias TeamMissionWeb.Message
+  alias TeamMissionWeb.Messages
 
   def join("room:lobby", message, socket) do
     name = message["params"]["name"]
@@ -16,30 +16,25 @@ defmodule TeamMissionWeb.RoomChannel do
      assign(socket, :user_data, %{name: name, id: id})}
   end
 
-  def join("room:" <> _private_room_id, message, socket) do
+  def join("room:" <> room_id, message, socket) do
     name = message["params"]["name"]
     id = message["params"]["id"]
 
     send(self(), :after_activity_join)
 
-    {:ok, assign(socket, :user_data, %{name: name, id: id})}
+    {:ok, assign(socket, :user_data, %{name: name, id: id, room_id: room_id})}
   end
 
   def handle_in("new_msg", payload, socket) do
     "room:" <> room = socket.topic
     payload = Map.merge(payload, %{"room" => room})
+    room_id = socket.assigns.user_data.room_id
+
+    Messages.add_message(payload, room_id)
 
     broadcast!(socket, "new_msg", payload)
     {:noreply, socket}
   end
-
-  # Useful if want to stream the users joining - otherwise can use presence to sync
-  # def handle_in("new_join", _params, socket) do
-  #   id = socket.assigns[:user_data][:id]
-  #   name = socket.assigns[:user_data][:name]
-  #   broadcast!(socket, "new_join", %{user_data: %{name: name, uuid: uuid}})
-  #   {:noreply, socket}
-  # end
 
   def handle_in("join_team", params, socket) do
     assign(socket, :user_data, %{teamId: params["teamId"]})
@@ -109,7 +104,9 @@ defmodule TeamMissionWeb.RoomChannel do
 
   def handle_info(:after_activity_join, socket) do
     name = socket.assigns.user_data.name
-    socket.assigns |> inspect() |> Logger.debug()
+    room_id = socket.assigns.user_data.room_id
+
+    Messages.initiate_room_messages(room_id)
 
     {:ok, _} =
       Presence.track(socket, "team", %{
@@ -119,7 +116,19 @@ defmodule TeamMissionWeb.RoomChannel do
       })
 
     push(socket, "presence_state", Presence.list(socket))
+    push(socket, "get_room_messages", %{messages: Enum.reverse(Messages.get_messages(room_id))})
 
     {:noreply, socket}
+  end
+
+  def terminate(_reason, socket) do
+    Presence.list(socket) |> inspect() |> Logger.debug()
+
+    presences = Presence.list(socket)
+
+    if Map.has_key?(presences, "students") &&
+         presences["students"].metas |> Kernel.length() == 1 do
+      Messages.reset_messages()
+    end
   end
 end

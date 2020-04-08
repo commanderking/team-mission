@@ -3,4 +3,5 @@ export const activityActions = {
   NEW_MESSAGE: "NEW_MESSAGE",
   UPDATE_ANSWER: "UPDATE_ANSWER",
   VOTE: "VOTE",
+  GET_ROOM_MESSAGES: "GET_ROOM_MESSAGES",
 };

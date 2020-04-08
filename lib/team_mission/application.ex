@@ -14,7 +14,8 @@ defmodule TeamMission.Application do
       TeamMissionWeb.Endpoint,
       # Starts a worker by calling: TeamMission.Worker.start_link(arg)
       # {TeamMission.Worker, arg},
-      TeamMissionWeb.Presence
+      TeamMissionWeb.Presence,
+      {TeamMissionWeb.Messages, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
