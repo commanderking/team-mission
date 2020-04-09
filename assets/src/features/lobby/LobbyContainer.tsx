@@ -115,7 +115,7 @@ const LobbyContainer = ({ displayName }: Props) => {
         {formattedTeams.map((team) => {
           const { id, members, image } = team;
 
-          const teamFull = members.length >= 4;
+          const teamFull = members.length >= 6;
           return (
             <Card key={id} title={team.name}>
               {image && (
@@ -136,7 +136,7 @@ const LobbyContainer = ({ displayName }: Props) => {
                   );
                 })}
               </div>
-              {!teamFull && !hasJoinedTeam(currentUser, students) && (
+              {(!teamFull || isAdmin) && !hasJoinedTeam(currentUser, students) && (
                 <Button
                   onClick={() => {
                     handleJoinTeam(id, currentUser.name, currentUser.id);

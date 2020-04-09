@@ -105,6 +105,7 @@ const getColumns = (
         <Button
           disabled={currentUserAnswerId === record.id}
           onClick={() => {
+            console.log("handling vote", channel);
             handleVote(channel, record.id);
           }}
         >

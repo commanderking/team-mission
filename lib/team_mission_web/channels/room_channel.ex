@@ -1,5 +1,4 @@
 require Logger
-import Ecto
 
 defmodule TeamMissionWeb.RoomChannel do
   use Phoenix.Channel
@@ -12,8 +11,7 @@ defmodule TeamMissionWeb.RoomChannel do
 
     send(self(), :after_join)
 
-    {:ok, %{name: "name", users: Presence.list(socket)},
-     assign(socket, :user_data, %{name: name, id: id})}
+    {:ok, assign(socket, :user_data, %{name: name, id: id})}
   end
 
   def join("room:" <> room_id, message, socket) do
@@ -27,10 +25,8 @@ defmodule TeamMissionWeb.RoomChannel do
 
   def handle_in("new_msg", payload, socket) do
     "room:" <> room = socket.topic
-    payload = Map.merge(payload, %{"room" => room})
-    room_id = socket.assigns.user_data.room_id
 
-    Messages.add_message(payload, room_id)
+    Messages.add_message(payload, room)
 
     broadcast!(socket, "new_msg", payload)
     {:noreply, socket}
@@ -70,12 +66,9 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_in("vote", %{"id" => voteId}, socket) do
-    name = socket.assigns[:user_data][:name]
-    id = socket.assigns[:user_data][:id]
-
     Presence.update(socket, "team", %{
-      name: name,
-      id: id,
+      name: socket.assigns[:user_data][:name],
+      id: socket.assigns[:user_data][:id],
       votedAnswerId: voteId
     })
 
@@ -122,8 +115,6 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def terminate(_reason, socket) do
-    Presence.list(socket) |> inspect() |> Logger.debug()
-
     presences = Presence.list(socket)
 
     if Map.has_key?(presences, "students") &&
