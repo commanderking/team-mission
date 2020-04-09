@@ -14,6 +14,7 @@ type Props = {
 
 const ActivityContainer = ({ displayName, teamId, userId }: Props) => {
   const { channelState, channel } = useActivityChannel(
+    `room:%{teamId}`,
     activityReducer,
     initialState,
     { name: displayName, id: userId },
