@@ -94,7 +94,6 @@ const LobbyContainer = ({ displayName }: Props) => {
   const currentUserTeam = findCurrentUserTeam(currentUser, students);
 
   const isAdmin = window.location.href.includes("admin");
-
   return (
     <div>
       {activityInProgress && currentUserTeam && (

@@ -9,16 +9,8 @@ const useActivityChannel = <T>(
   topic: string,
   reducer: (state: any, action: any) => any,
   initialState: T,
-  params: Object,
-  teamId: string
+  params: Object
 ) => {
-  // const { channelState, channel, dispatch } = useChannel(
-  //   `room:${teamId}`,
-  //   reducer,
-  //   initialState,
-  //   params
-  // );
-
   const socket = useContext(SocketContext);
   const [state, dispatch]: [T, any] = useReducer(reducer, initialState);
 

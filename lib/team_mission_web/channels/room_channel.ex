@@ -5,8 +5,7 @@ defmodule TeamMissionWeb.RoomChannel do
   alias TeamMissionWeb.Presence
   alias TeamMissionWeb.Messages
 
-  def join("room:lobby", message, socket) do
-    name = message["params"]["name"]
+  def join("room:lobby", %{"params" => %{"name" => name}}, socket) do
     id = Ecto.UUID.generate()
 
     send(self(), :after_join)
@@ -14,12 +13,8 @@ defmodule TeamMissionWeb.RoomChannel do
     {:ok, assign(socket, :user_data, %{name: name, id: id})}
   end
 
-  def join("room:" <> room_id, message, socket) do
-    name = message["params"]["name"]
-    id = message["params"]["id"]
-
+  def join("room:" <> room_id, %{"params" => %{"name" => name, "id" => id}}, socket) do
     send(self(), :after_activity_join)
-
     {:ok, assign(socket, :user_data, %{name: name, id: id, room_id: room_id})}
   end
 
@@ -32,19 +27,17 @@ defmodule TeamMissionWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("join_team", params, socket) do
-    assign(socket, :user_data, %{teamId: params["teamId"]})
-
+  def handle_in("join_team", %{"teamId" => teamId}, socket) do
     name = socket.assigns.user_data.name
     id = socket.assigns.user_data.id
 
     Presence.update(socket, "students", %{
       name: name,
       id: id,
-      teamId: params["teamId"]
+      teamId: teamId
     })
 
-    {:noreply, socket}
+    {:noreply, assign(socket, :user_data, %{teamId: teamId})}
   end
 
   def handle_in("leave_team", _params, socket) do
@@ -76,8 +69,7 @@ defmodule TeamMissionWeb.RoomChannel do
   end
 
   def handle_info(:after_join, socket) do
-    name = socket.assigns.user_data.name
-    id = socket.assigns.user_data.id
+    %{:user_data => %{:name => name, :id => id}} = socket.assigns
 
     push(socket, "after_join", %{
       current_user: %{id: id, name: name}
@@ -109,7 +101,10 @@ defmodule TeamMissionWeb.RoomChannel do
       })
 
     push(socket, "presence_state", Presence.list(socket))
-    push(socket, "get_room_messages", %{messages: Enum.reverse(Messages.get_messages(room_id))})
+
+    push(socket, "get_room_messages", %{
+      messages: room_id |> Messages.get_messages() |> Enum.reverse()
+    })
 
     {:noreply, socket}
   end

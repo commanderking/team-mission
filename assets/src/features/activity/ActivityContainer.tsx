@@ -14,11 +14,10 @@ type Props = {
 
 const ActivityContainer = ({ displayName, teamId, userId }: Props) => {
   const { channelState, channel } = useActivityChannel(
-    `room:%{teamId}`,
+    `room:${teamId}`,
     activityReducer,
     initialState,
-    { name: displayName, id: userId },
-    teamId || ""
+    { name: displayName, id: userId, teamId }
   );
 
   useEffect(() => {
