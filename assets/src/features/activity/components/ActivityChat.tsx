@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { ActivityState } from "features/activity/ActivityTypes";
-import { Form, Input, Button, Card, Comment, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import { Message } from "features/activity/ActivityTypes";
+import { Form, Input, Button, Card } from "antd";
+import ChatComments from "features/activity/components/ChatComments";
+
 const Messages = ({
   channelState,
   channel,
@@ -18,20 +18,7 @@ const Messages = ({
   return (
     <div>
       <Card title="Team Chat">
-        <Card
-          style={{ height: "550px", marginBottom: "25px", overflowY: "scroll" }}
-        >
-          {messages.map((message: Message, index: number) => {
-            return (
-              <Comment
-                key={`chat-message-${index}`}
-                author={<a>{message.name}</a>}
-                avatar={<Avatar icon={<UserOutlined />} />}
-                content={<p>{message.text}</p>}
-              />
-            );
-          })}
-        </Card>
+        <ChatComments messages={messages} />
         <Form
           form={form}
           name="basic"

@@ -3,63 +3,16 @@ import { Card, Button, Tag } from "antd";
 import _ from "lodash";
 import lobbyReducer, { initialState } from "features/lobby/LobbyReducer";
 import useLobbyChannel from "features/lobby/useLobbyChannel";
-import { Team, CurrentUser, TeamMember } from "features/lobby/LobbyTypes";
-import { Channel } from "phoenix";
 import ActivityContainer from "features/activity/ActivityContainer";
-
+import {
+  hasJoinedTeam,
+  isOnThisTeam,
+  findCurrentUserTeam,
+  mapMembersToTeams,
+} from "features/lobby/lobbyUtils";
+import StartActivityButton from "features/lobby/components/StartActivityButton";
 type Props = {
   displayName: string;
-};
-
-const hasJoinedTeam = (currentUser: CurrentUser, teamMembers: TeamMember[]) => {
-  const userTeamMember = teamMembers.find(
-    (member) => member.id === currentUser.id && member.teamId !== null
-  );
-
-  return Boolean(userTeamMember);
-};
-
-const isOnThisTeam = (
-  currentUser: CurrentUser,
-  teamMembers: TeamMember[],
-  teamId: string
-) => {
-  const userTeamMember = teamMembers.find(
-    (member) => member.id === currentUser.id
-  );
-
-  if (!userTeamMember) {
-    return false;
-  }
-
-  return userTeamMember.teamId === teamId;
-};
-
-const findCurrentUserTeam = (
-  currentUser: CurrentUser,
-  teamMembers: TeamMember[]
-) => {
-  const user = teamMembers.find((member) => member.id === currentUser.id);
-  if (!user) {
-    return null;
-  }
-
-  return user.teamId;
-};
-
-const mapMembersToTeams = (teamMembers: TeamMember[], teams: Team[]) => {
-  const teamMembersByTeamId = _.groupBy(teamMembers, "teamId");
-
-  return teams.map((team) => {
-    return {
-      ...team,
-      members: teamMembersByTeamId[team.id] || [],
-    };
-  });
-};
-
-const handleStartActivity = (channel: Channel | null) => {
-  channel?.push("start_activity", {});
 };
 
 const LobbyContainer = ({ displayName }: Props) => {
@@ -93,7 +46,6 @@ const LobbyContainer = ({ displayName }: Props) => {
 
   const currentUserTeam = findCurrentUserTeam(currentUser, students);
 
-  const isAdmin = window.location.href.includes("admin");
   return (
     <div>
       {activityInProgress && currentUserTeam && (
@@ -135,7 +87,7 @@ const LobbyContainer = ({ displayName }: Props) => {
                   );
                 })}
               </div>
-              {(!teamFull || isAdmin) && !hasJoinedTeam(currentUser, students) && (
+              {!teamFull && !hasJoinedTeam(currentUser, students) && (
                 <Button
                   onClick={() => {
                     handleJoinTeam(id, currentUser.name, currentUser.id);
@@ -160,16 +112,7 @@ const LobbyContainer = ({ displayName }: Props) => {
           );
         })}
       </div>
-      {isAdmin && (
-        <Button
-          type="primary"
-          onClick={() => {
-            handleStartActivity(channel);
-          }}
-        >
-          Start Activity
-        </Button>
-      )}
+      <StartActivityButton channel={channel} />
     </div>
   );
 };
